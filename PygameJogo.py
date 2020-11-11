@@ -28,3 +28,6 @@ mixer.music.play()
 
 #Todos os direitos reservados a Super Soccer, de onde vem a música utilizada neste jogo.
 
+#Frame rate do jogo
+clock=pygame.time.Clock()
+FPS=30
