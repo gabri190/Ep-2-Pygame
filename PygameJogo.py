@@ -25,6 +25,25 @@ from pygame import mixer
 mixer.init()
 mixer.music.load('SSSnes.mp3')
 mixer.music.play()
+#declarando classes
+#chão
+Class Ground(pygame.sprite.Sprite):
+    def__init__(self):
+        pygame.sprite.Sprite__init__(self)
+
+    def update(self):
+#heroi do jogo
+Class Hero(pygame.sprite.Sprite):
+    def__init__(self):
+        pygame.sprite.Sprite__init__(self)
+
+    def update(self):
+#osbtáculos
+Class Obstacles(pygame.sprite.Sprite):
+    def__init__(self):
+        pygame.sprite.Sprite__init__(self)
+
+    def update(self):
 
 #Todos os direitos reservados a Super Soccer, de onde vem a música utilizada neste jogo.
 
