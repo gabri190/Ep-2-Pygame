@@ -23,7 +23,7 @@ pygame.display.set_caption("projeto python")
 
 from pygame import mixer 
 mixer.init()
-mixer.music.load('SSSnes.mp3')
+mixer.music.load('musicafundo.mp3')
 mixer.music.play()
 #declarando classes
 #chão
@@ -45,7 +45,7 @@ Class Obstacles(pygame.sprite.Sprite):
 
     def update(self):
 
-#Todos os direitos reservados a Super Soccer, de onde vem a música utilizada neste jogo.
+#Todos os direitos reservados a Yasumu pela música utilizada neste jogo.
 
 #Frame rate do jogo
 clock=pygame.time.Clock()
