@@ -88,3 +88,55 @@ class player(object):
         #Se o contador de passos mais 1 for maior que o numero de sprite vezes 6 frames, retorna a zero
         if self.walkCount + 1 >= 54:
             self.walkCount = 0
+            
+         #Se não estiver parado, atualiza na tela elementos da lista de acordo com os passos e esquerda ou direita
+        
+        if not(self.standing):
+            if self.left:
+                win.blit(walkLeft[self.walkCount//6], (self.x,self.y))
+                self.walkCount += 1
+            elif self.right:
+                win.blit(walkRight[self.walkCount//6], (self.x,self.y))
+                self.walkCount +=1
+        else:
+            if self.right:
+                win.blit(walkRight[0], (self.x, self.y))
+            else:
+                win.blit(walkLeft[0], (self.x, self.y))
+
+        #Desenha a barra de vida vermelha e uma verde por cima, reduzindo a verde de acordo com a saúde
+        pygame.draw.rect(win, (255,0,0), (self.hitbox[0]-10, self.hitbox[1] - 20, 50, 10))
+        pygame.draw.rect(win, (0,128,0), (self.hitbox[0]-10, self.hitbox[1] - 20, 50 - (5 * (10 - self.health)), 10))
+        
+        #Posiciona hitbox
+        self.hitbox = (self.x + 17, self.y + 11, 29, 52)
+
+        #Criando caixa de colisão para compreender bugs nas colisões
+        #pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+
+    #Define hit(colisão)
+    def hit(self):
+        if self.imunityTime==0:#se tempo de imunidade esgotado
+            self.health-=1#jogador perde 1 de vida
+            self.isJump = False#jogador não está pulando
+            self.velJump=0#velocidade do jogador igual a 0
+            self.walkCount = 0#contador de passos igual a 0
+            self.countHit=10#contador de colisao
+    def recover(self):#recuperação de vidas
+        self.health+=1#incrementa 1 na vida ao jogador
+        self.countRecover=10#contador de recuperacao
+#classe projétil
+class projectile(object):
+    def __init__(self,x,y,radius,color1,color2,facing): #Construtor da classe e parâmetros iniciais 
+        self.x = x
+        self.y = y
+        self.radius = radius#raio do circulo que corresponde ao projetil
+        self.color1 = color1#cor 1
+        self.color2 = color2#cor2
+        self.facing = facing#lado que o projétil voa
+        self.vel = 4 * facing#velocidade do projetil
+#cria a função de desenho
+    def draw(self,win):
+        pygame.draw.circle(win, self.color1, (self.x,self.y), self.radius)   #desenho do círculo interno
+        pygame.draw.circle(win, self.color2, (self.x,self.y), self.radius,1) #desenho do círculo externo
+
