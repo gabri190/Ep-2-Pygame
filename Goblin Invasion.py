@@ -38,3 +38,53 @@ hitSound = pygame.mixer.Sound('hit.mp3')
 #Carrega música de fundo 
 music = pygame.mixer.music.load('musicafundo.mp3')
 pygame.mixer.music.play(-1)
+
+#Definido classe do jogador
+class player(object):
+    def __init__(self,x,y,width,height):  #Construtor da classe e parâmetros iniciais 
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.vel = 2.5                    #Velocidade do jogador
+        self.velJump = 0                  #Velocidade do pulo
+        self.isJump = False               #"Estado de pulo"
+        self.left = False                 #"Estado de personagem encarando a esquerda"
+        self.right = True                 #"Estado de personagem encarando a direita"
+        self.standing = True              #Permanecer
+        self.walkCount = 0                #Contador de passos
+        self.gravity = 1.5                #Gravidade
+        self.velJump=0                    #Velocidade do pulo
+        self.health=10                    #vida do personagem
+        self.countHit=0                   #Contador de hit
+        self.countRecover=0               #Contador de recuperação
+        self.imunityTime=0                #Tempo de imunidade
+        self.hitbox = (self.x + 17, self.y + 11, 29, 52)     #Caixa de colisão
+
+    #Criando função de desenho na tela
+    def draw(self, win):
+        
+        #Se toma dano, printa na tela '-1hp' em posição definida, decrementa contador de hit
+        
+        if self.countHit>0:
+            font1 = pygame.font.SysFont('roboto', 50)
+            text = font1.render('-1 hp', 1, (175,0,0))
+            win.blit(text, (self.x+self.width/2 - (text.get_width()/2),self.y-50))
+            self.countHit-=1
+        
+        #Se colide com o coração, printa na tela '+1hp' em posição definida, decrementa contador de recuperação
+        
+        if self.countRecover>0:
+            font1 = pygame.font.SysFont('roboto', 50)
+            text = font1.render('+1 hp', 1, (0,175,0))
+            win.blit(text, (self.x+self.width/2 - (text.get_width()/2),self.y-50))
+            self.countRecover-=1
+        
+        #Se tempo de imunidade maior que zero, decrementa tempo
+        
+        if self.imunityTime>0:
+            self.imunityTime-=1
+
+        #Se o contador de passos mais 1 for maior que o numero de sprite vezes 6 frames, retorna a zero
+        if self.walkCount + 1 >= 54:
+            self.walkCount = 0
