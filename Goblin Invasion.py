@@ -193,4 +193,55 @@ class enemy(object):
             facing = 1#face virada para a direita
 #adicao de balas na lista bullets colocando a posicao do projetil e as cores
         self.bullets.append(projectile(round(self.x + self.width //2), round(self.y + self.height//2), 6, (255,0,0),(0,0,0), facing))
+
+#inimigo se movimentando        
+    def move(self):
+        if self.vel > 0:
+            if self.x + self.vel < self.path[1]:#se o inimigo pode ir ate a posicao 1 da lista path(fim da tela para o inimigo)
+                self.x += self.vel #incrementa a posição x do inimigo
+            else:                               #se o inimigo so nao pode ir ate a posicao 1 da lista path(fim da tela para o inimigo)
+                self.vel = self.vel * -1 #inverte a velocidade
+                self.walkCount = 0#reseta o contador de passos do inimigo
+        else:
+            if self.x - self.vel > self.path[0]:#se o inimigo pode ir ate a posicao 0 da lista path(fim da tela para o inimigo)
+                self.x += self.vel #incrementa a posição x do inimigo
+            else:                               #se o inimigo so nao pode ir ate a posicao 0 da lista path(fim da tela para o inimigo)
+                self.vel = self.vel * -1 #inverte a velocidade
+                self.walkCount = 0#reseta o contador de passos do inimigo
+#colisao
+    def hit(self):
+        if self.health > 0:
+            self.health -= 1#perde 1 de vida
+            
+#classe dos obstaculos
+class obstacle(object):
+    def __init__(self, x, y, width, height):#Construtor da classe e parâmetros iniciais
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.listObstacle = [pygame.image.load('caixa.png')]#imagem da caixa
+        self.hitbox = [self.x, self.y, self.width, self.height]#hitbox da caixa
+#cria a função de desenho dos obstaculos (caixas)
+        
+    def draw(self,win):
+        image = pygame.transform.scale(self.listObstacle[0].convert_alpha(),(self.width,self.height))#transformação de escala da imagem
+        win.blit(image,(self.x,self.y))#atualiza
+        #pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+        
+#classe das vidas ganhar ao passar pelo coração
+class heart_life(object):
+    def __init__(self, x, y, width, height):##Construtor da classe e parâmetros iniciais
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.listHearts = [pygame.image.load('heart.png')]#imagem coracao
+        self.hitbox = [self.x+4, self.y+4, self.width-8, self.height-10]#hitbox do coracao
+        
+#desenho do coracao
+    def draw(self,win):
+        image = pygame.transform.scale(self.listHearts[0].convert_alpha(),(self.width,self.height))#transformação de escala
+        win.blit(image,(self.x,self.y))#atualiza
+        #pygame.draw.rect(win, (255,0,0), self.hitbox,2)
         
