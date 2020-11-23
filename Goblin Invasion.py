@@ -297,3 +297,58 @@ def verificar(caixa,x,y):
             return True
     return False
    
+
+# função de atirar
+def shoot(char,bullets):
+    bulletSound.play()#som do tiro
+    if char.left:#atirar para esquerda
+        facing = -1#face voltada para a esquerda
+    else:
+        facing = 1#face voltada para a direita
+   #quantidade de balas     
+    if len(bullets) < 20:
+        #adicao de balas na lista bullets colocando a posicao do projetil e as cores
+        bullets.append(projectile(round(char.x + char.width //2), round(char.y + char.height//2), 6, (0,0,255),(0,0,0), facing))
+
+def start():
+    countBg=[0]#contador de background
+    font = pygame.font.SysFont('comicsans', 30, True)#texto
+    man = player(100, 500, 64,64)#posicao inicial do jogador
+    goblins = [enemy(200, 500, 64, 64, 265),enemy(330, 500, 64, 64, 400),enemy(900, 500, 64, 64, 1000)]#posicao inicial dos 3 inimigos
+#poscicao da caixa (a cada 100 pixels no eixo x  ,no eixo y a posicao fica aleatória)
+    caixas = [obstacle(500,random.randint(100,500),64,64),obstacle(600,random.randint(100,500),64,64),obstacle(700,random.randint(100,500),64,64),obstacle(800,random.randint(100,500),64,64)]
+#posicao dos coracoes (nem todas as caixas possuem coração)   
+    hearts = [heart_life(caixas[0].x+16,caixas[0].y-30,32,32),heart_life(caixas[1].x+16,caixas[1].y-30,32,32),heart_life(caixas[3].x+16,caixas[3].y-30,32,32)]
+    shootLoop = 0 #variável para criar intervalo entre as balas
+    bullets = []#lista de balas (inicialmente vao ser adicionadas balas)
+    floor=500 #posição do chão
+    run = True #variável de condição do laço
+    return [countBg,font, man, goblins, caixas, hearts, shootLoop, bullets, floor, run] #retorna todas as variáveis
+    
+countBg,font, man, goblins, caixas, hearts, shootLoop, bullets, floor, run = start()# executa a função start 
+
+#inicio do loop
+while run:
+    clock.tick(54)#contador de frames
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:#se o usuário clicou para fechar o jogo
+            run = False #variável de condição do laço igual a falso, interrompe laço
+    keys = pygame.key.get_pressed()#havendo teclas pressionadas
+    if (keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and (man.health == 0 or len(goblins)==0):#se a tecla enter é pressionada quando o jogador está morto ou matou todos os inimigos
+            countBg,font, man, goblins, caixas, hearts, shootLoop, bullets, floor, run = start() #reinicia o jogo
+#se saude do homem maior que 0 e se a lista de goblins não está vazia
+    if man.health>0 and len(goblins)>0:
+        for heart in hearts:
+            #condicoes em que o homem encontra o coracao
+            if man.hitbox[1] < heart.hitbox[1] + heart.hitbox[3] and man.hitbox[1] + man.hitbox[3] > heart.hitbox[1]:
+                if man.hitbox[0] + man.hitbox[2] > heart.hitbox[0] and man.hitbox[0] < heart.hitbox[0] + heart.hitbox[2]:
+                    if man.health<10:#se saude menor que 10
+                        man.recover()#recuperacao de vida
+                    hearts.pop(hearts.index(heart))#remove o coracao
+        for goblin in goblins:
+            #condicoes de colisao entre homem e inimigo(goblin)
+            if man.hitbox[1] < goblin.hitbox[1] + goblin.hitbox[3] and man.hitbox[1] + man.hitbox[3] > goblin.hitbox[1]:
+                if man.hitbox[0] + man.hitbox[2] > goblin.hitbox[0] and man.hitbox[0] < goblin.hitbox[0] + goblin.hitbox[2]:
+                    man.hit()#colisao do home
+                    if man.imunityTime==0:#se tempo de imunidade do homem nulo
+                        man.imunityTime=20#retorna ao tempo de imunidade inicial
