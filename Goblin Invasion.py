@@ -140,3 +140,57 @@ class projectile(object):
         pygame.draw.circle(win, self.color1, (self.x,self.y), self.radius)   #desenho do círculo interno
         pygame.draw.circle(win, self.color2, (self.x,self.y), self.radius,1) #desenho do círculo externo
 
+
+#classe do inimigo
+class enemy(object):
+    #caminha para direita(imagens)
+    walkRight = [pygame.image.load('R1E.png'), pygame.image.load('R2E.png'), pygame.image.load('R3E.png'), pygame.image.load('R4E.png'), pygame.image.load('R5E.png'), pygame.image.load('R6E.png'), pygame.image.load('R7E.png'), pygame.image.load('R8E.png'), pygame.image.load('R9E.png'), pygame.image.load('R10E.png'), pygame.image.load('R11E.png')]
+    #caminha para a esquerda(imagens)
+    walkLeft = [pygame.image.load('L1E.png'), pygame.image.load('L2E.png'), pygame.image.load('L3E.png'), pygame.image.load('L4E.png'), pygame.image.load('L5E.png'), pygame.image.load('L6E.png'), pygame.image.load('L7E.png'), pygame.image.load('L8E.png'), pygame.image.load('L9E.png'), pygame.image.load('L10E.png'), pygame.image.load('L11E.png')]
+
+    def __init__(self, x, y, width, height, end): #Construtor da classe e parâmetros iniciais 
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.end = end#ate onde o inimigo pode caminhar
+        self.path = [self.x, self.end]#lista com a posicao em inicial e a posicao final, que o inimigo pode ir 
+        self.walkCount = random.randint(1,66)#contador de passos aleatório
+        self.vel = random.randint(-150,150)/100#velocidade aleátoria do inimigo
+        self.hitbox = (self.x + 17, self.y + 2, 31, 57)#hitbox (eixo x,eixoy,largura ,altura)
+        self.health = 10#vida do inimigo
+        self.bullets=[]#balas
+#cria a função de desenho do inimigo
+    def draw(self,win):
+        self.move()#inimigo se movendo  
+        if self.walkCount + 1 >= 66:#contador de passos nao pode ser maior q 66
+            self.walkCount = 0#reseta a contagem
+        if self.walkCount==48:
+            self.shoot()#atira 
+#velocidade do inimigo maior que 0
+        if self.vel > 0:
+            win.blit(self.walkRight[self.walkCount //6], (self.x, self.y))#atualiza posicao do inimigo para direita
+            self.walkCount += 1#incremento no contador de passo
+        else:
+            win.blit(self.walkLeft[self.walkCount //6], (self.x, self.y))#atualiza posicao do inimigo para esquerda
+            self.walkCount += 1#incremento no contador de passos
+        
+         #Desenha a barra de vida vermelha e uma verde por cima, reduzindo a verde de acordo com a saúde
+        pygame.draw.rect(win, (255,0,0), (self.hitbox[0], self.hitbox[1] - 20, 50, 10))
+        pygame.draw.rect(win, (0,128,0), (self.hitbox[0], self.hitbox[1] - 20, 50 - (5 * (10 - self.health)), 10))
+
+        #Posiciona hitbox
+        self.hitbox = (self.x + 17, self.y + 2, 31, 57)
+        #Criando caixa de colisão para compreender bugs nas colisões
+        #pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+        
+ #função para o  inimigo atirar   
+    def shoot(self):
+        bulletSound.play()#som do tiro
+        if self.vel < 0:#se velocidade menor que 0
+            facing = -1 #face virada para a esquerda 
+        else:
+            facing = 1#face virada para a direita
+#adicao de balas na lista bullets colocando a posicao do projetil e as cores
+        self.bullets.append(projectile(round(self.x + self.width //2), round(self.y + self.height//2), 6, (255,0,0),(0,0,0), facing))
+        
