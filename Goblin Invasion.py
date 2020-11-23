@@ -244,4 +244,56 @@ class heart_life(object):
         image = pygame.transform.scale(self.listHearts[0].convert_alpha(),(self.width,self.height))#transformação de escala
         win.blit(image,(self.x,self.y))#atualiza
         #pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+    #função de principal de desenho
+def redrawGameWindow(countBg):
+    if countBg[0] > 146: #se o contador de background maior que 146
+        countBg[0]=0 #reseta o contador de background
+    
+    win.blit(pygame.transform.scale(bgs[countBg[0]//3].convert_alpha(),(winWidth,winHeight)), (0,0)) #atualiza imagem de fundo
+    text = font.render('Life: ' + str(man.health), 1, (100,255,100))#escreve um texto sobre a saude do homem
+    win.blit(text, (350, 10))#atualiza o texto
+#se saude do homem maior que 0 e se a lista de goblins não está vazia
+    if man.health>0 and len(goblins)>0:
+        man.draw(win)#desenho na tela do homem
+        #desenhos do goblin ,balas ,coração e caixa em cada grupo respectivo a essas classes
+        for goblin in goblins:
+            goblin.draw(win)
+            for bullet in goblin.bullets:
+                bullet.draw(win)
+        for caixa in caixas:
+            caixa.draw(win)
+        for bullet in bullets:
+            bullet.draw(win)
+        for heart in hearts:
+            heart.draw(win)
+    #se saude do homem igual a 0
+    if man.health==0:
+        font1 = pygame.font.SysFont('roboto', 50)
+        text1 = font1.render('YOU DIE!!!', 1, (255,0,0))#texto voce morreu
+        win.blit(text1, (winWidth/2 - (text1.get_width()/2),winHeight/2))#atualiza o texto
+
+        font2 = pygame.font.SysFont('roboto', 30)
+        text2 = font2.render('Press ENTER to Restart!', 1, (200,200,200))#texto pressiona enter 
+        win.blit(text2, (winWidth/2 - (text2.get_width()/2),winHeight/2+50))#atuliza o texto
+
+    #se a lista de goblins está vazia
+    if len(goblins)==0:
+        font1 = pygame.font.SysFont('roboto', 50)
+        text1 = font1.render('YOU WIN!', 1, (0,255,0))#texto voce ganhou
+        win.blit(text1, (winWidth/2 - (text1.get_width()/2),winHeight/2))#atualiza o texto
+
+        font2 = pygame.font.SysFont('roboto', 30)
+        text2 = font2.render('Press ENTER to Restart!', 1, (200,200,200))#texto pressiona enter
+        win.blit(text2, (winWidth/2 - (text2.get_width()/2),winHeight/2+50))#atualiza o texto
+    countBg[0]+=1 #incrementa o contador de background
+
         
+#atualiza o jogo        
+    pygame.display.update()
+#verifica a condicao de colisao do homem e a caixa
+def verificar(caixa,x,y):
+    if y < caixa.hitbox[1] + caixa.hitbox[3] and y + man.hitbox[3] > caixa.hitbox[1]:
+        if x + man.hitbox[2] > caixa.hitbox[0] and x < caixa.hitbox[0] + caixa.hitbox[2]:
+            return True
+    return False
+   
