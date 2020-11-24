@@ -391,3 +391,66 @@ while run:
                     bullet.x += bullet.vel
                 else:#caso contrario a bala é removida
                     goblin.bullets.pop(goblin.bullets.index(bullet))
+        #apertando a tecla espaco
+        if keys[pygame.K_SPACE] and shootLoop == 0:
+            shoot(man,bullets)#atira as balas
+            shootLoop = 1
+#apertando o comando esquerda
+        if keys[pygame.K_LEFT] and man.x > man.vel:
+            canmove=True#homem pode se mover
+            for caixa in caixas:
+                if verificar(caixa,man.hitbox[0] - man.vel,man.hitbox[1]):#verifica condicoes de colisao nas laterais entre caixa e jogador
+                    canmove=False#ele nao pode se mover
+            if canmove:#se ele pode se mover
+                man.x -= man.vel#muda a posição do jogador
+                man.left = True #jogador encara a esquerda
+                man.right = False
+                man.standing = False
+#apertando o comando direita         
+        elif keys[pygame.K_RIGHT] and man.x < winWidth - man.width - man.vel:#condicoes para o homem se mover
+            canmove=True#homem pode se mover
+            for caixa in caixas:
+                if verificar(caixa,man.hitbox[0] + man.vel,man.hitbox[1]):#verifica condicoes de colisao nas laterais entre caixa e jogador
+                    canmove=False#ele nao pode se mover
+            if canmove:#se ele pode se mover
+                man.x += man.vel#muda a posição do jogador
+                man.right = True #jogador encara a direita
+                man.left = False
+                man.standing = False
+        else:#não apertou nenhum comando
+            man.standing = True
+            #man.walkCount = 0
+#incrementa velocidade do pulo de acordo com a gravidade
+        man.velJump += man.gravity
+        man.y+=man.velJump#incrementa a posicao y do jogador
+        if man.y>floor:#se posicao maior que o chão
+            man.y=floor#posição do jogador igual a posição do chão
+            man.velJump=0#velocidade do pulo nula
+#verificando condicoes de colisao da caixa com o jogador        
+        for caixa in caixas:
+            if (man.hitbox[0]+man.hitbox[2] > caixa.hitbox[0] and man.hitbox[0] < caixa.hitbox[0]+caixa.hitbox[2] and man.velJump>0) and ((man.y+man.height > caixa.y and man.y < caixa.y and (man.y-man.velJump)+man.height<caixa.y) or man.y-man.velJump==caixa.y-man.height):
+                man.y=caixa.y-man.height#atualiza posicao do jogador em y 
+                man.velJump=0#velocidade do pulo nula
+            
+#condicao em que o homem nao esta pulando e a velocidade de pulo igual a zero      
+        if not(man.isJump) and man.velJump==0:
+            #aperta a tecla K_UP do teclado
+            if keys[pygame.K_UP]:
+                man.isJump = True#homem pula
+                man.walkCount = 0#reseta contador de passos
+                man.velJump = -30#define a velocidade do pulo
+                cont=0
+ #condicao em que o homem está pulando               
+        else:
+            #velocidade do pulo do jogador nula
+            if man.velJump==0:
+                cont+=1#incrementa o contador
+            if cont==2:#2° contagem
+                cont=0#volta ao inicio
+                man.isJump = False#homem para de pular
+
+ #desenho da tela atualizado
+    redrawGameWindow(countBg)
+    
+#saida do jogo
+pygame.quit()
