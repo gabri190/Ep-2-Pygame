@@ -89,7 +89,7 @@ class player(object):
         if self.walkCount + 1 >= 54:
             self.walkCount = 0
             
-         #Se não estiver parado, atualiza na tela elementos da lista de acordo com os passos e esquerda ou direita
+#Se não estiver parado, atualiza na tela elementos da lista de acordo com os passos e esquerda ou direita
         
         if not(self.standing):
             if self.left:
@@ -139,7 +139,6 @@ class projectile(object):
     def draw(self,win):
         pygame.draw.circle(win, self.color1, (self.x,self.y), self.radius)   #desenho do círculo interno
         pygame.draw.circle(win, self.color2, (self.x,self.y), self.radius,1) #desenho do círculo externo
-
 
 #classe do inimigo
 class enemy(object):
@@ -193,7 +192,7 @@ class enemy(object):
             facing = 1#face virada para a direita
 #adicao de balas na lista bullets colocando a posicao do projetil e as cores
         self.bullets.append(projectile(round(self.x + self.width //2), round(self.y + self.height//2), 6, (255,0,0),(0,0,0), facing))
-
+        
 #inimigo se movimentando        
     def move(self):
         if self.vel > 0:
@@ -244,7 +243,8 @@ class heart_life(object):
         image = pygame.transform.scale(self.listHearts[0].convert_alpha(),(self.width,self.height))#transformação de escala
         win.blit(image,(self.x,self.y))#atualiza
         #pygame.draw.rect(win, (255,0,0), self.hitbox,2)
-    #função de principal de desenho
+        
+#função de principal de desenho
 def redrawGameWindow(countBg):
     if countBg[0] > 146: #se o contador de background maior que 146
         countBg[0]=0 #reseta o contador de background
@@ -296,9 +296,8 @@ def verificar(caixa,x,y):
         if x + man.hitbox[2] > caixa.hitbox[0] and x < caixa.hitbox[0] + caixa.hitbox[2]:
             return True
     return False
-   
 
-# função de atirar
+# funca de atirar
 def shoot(char,bullets):
     bulletSound.play()#som do tiro
     if char.left:#atirar para esquerda
@@ -352,3 +351,43 @@ while run:
                     man.hit()#colisao do home
                     if man.imunityTime==0:#se tempo de imunidade do homem nulo
                         man.imunityTime=20#retorna ao tempo de imunidade inicial
+                    
+     
+    #variável de delay entre os tiros
+        if shootLoop > 0:#se variável de delay maior que 0
+            shootLoop += 1#incremento na variavel de delay
+        if shootLoop > 20:#se variável de delay maior que 20
+            shootLoop = 0#reseta variável de delay, jogador pode atirar novamente
+        
+        
+  #condicao em que a bala atinge o goblin      
+        for bullet in bullets:
+            for goblin in goblins:
+                if bullet.y - bullet.radius < goblin.hitbox[1] + goblin.hitbox[3] and bullet.y + bullet.radius > goblin.hitbox[1]:
+                    if bullet.x + bullet.radius > goblin.hitbox[0] and bullet.x - bullet.radius < goblin.hitbox[0] + goblin.hitbox[2]:
+                        hitSound.play()
+                        goblin.hit()#colisao do goblin com a bala
+                        bullets.pop(bullets.index(bullet))#remocao da bala
+                        if goblin.health==0:#se vida nula do inimigo(goblin)
+                            goblins.pop(goblins.index(goblin))#ele é removido do jogo
+                            
+                
+  #a bala nao pode ultrapassar no eixo x os pixels da tela                      
+            if bullet.x < winWidth and bullet.x > 0:
+                bullet.x += bullet.vel
+            else:#caso contrario ela e removida
+                bullets.pop(bullets.index(bullet))
+ #goblin atirando no jogador       
+        for goblin in goblins:
+            for bullet in goblin.bullets:
+                #condicoes para a bala atingir o jogador
+                if bullet.y - bullet.radius < man.hitbox[1] + man.hitbox[3] and bullet.y + bullet.radius > man.hitbox[1]:
+                    if bullet.x + bullet.radius > man.hitbox[0] and bullet.x - bullet.radius < man.hitbox[0] + man.hitbox[2]:
+                        hitSound.play()
+                        man.hit()#jogador atingido
+                        goblin.bullets.pop(goblin.bullets.index(bullet))#bala removida
+            #a bala nao pode ultrapassar no eixo x os pixels da tela            
+                if bullet.x < winWidth and bullet.x > 0:
+                    bullet.x += bullet.vel
+                else:#caso contrario a bala é removida
+                    goblin.bullets.pop(goblin.bullets.index(bullet))
