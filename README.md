@@ -7,7 +7,6 @@ Link para vídeo demonstrativo:
 
 # Referências:
 Para a implementação de várias funcionalidades, uma miscelânea de tutorias foi consultada. Os mais relevantes foram os vídeos a seguir e suas sequências: 
-
 https://www.youtube.com/watch?v=Z-Q5DHPXfdg
 https://www.youtube.com/watch?v=UZg49z76cLw
 https://www.youtube.com/watch?v=dGwmmBBMlKs
