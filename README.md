@@ -1,4 +1,5 @@
 # Ep-2-Pygame
+#Trio:Nivea Abreu,Gabriel de Araujo e Breno Alencar
 # Goblin Invasion
 Jogo de python que consiste em um jogador e 3 inimigos, o jogador pode ir para a direita e esquerda (teclas direita e esquerda do  teclado), pular(tecla para cima no  teclado) e também pode atirar nos inimigos (backspace do teclado), além disso, há caixas colocadas aleatoriamente ao longo do eixo y da tela para que, ao chegar à caixa, o jogador pegue um coração e recupere vidas, o jogador começa com 10 vidas, se matar os 3 inimigos ele vence (aparece na tela "you win"), se perder todas as vidas (pois o inimigo também pode atirar e a colisão faz perder vida) aparece na tela "you die" e termina o jogo.
 
