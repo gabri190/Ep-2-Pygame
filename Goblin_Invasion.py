@@ -23,7 +23,6 @@ win = pygame.display.set_mode((winWidth,winHeight))
 pygame.display.set_caption("Goblin Invasion")
 
 #Sprites do personagem principal
-
 bgs = [pygame.image.load('frame-001.gif'), pygame.image.load('frame-002.gif'), pygame.image.load('frame-003.gif'), pygame.image.load('frame-004.gif'), pygame.image.load('frame-005.gif'), pygame.image.load('frame-006.gif'), pygame.image.load('frame-007.gif'), pygame.image.load('frame-008.gif'), pygame.image.load('frame-009.gif'), pygame.image.load('frame-010.gif'), pygame.image.load('frame-011.gif'), pygame.image.load('frame-012.gif'), pygame.image.load('frame-013.gif'), pygame.image.load('frame-014.gif'), pygame.image.load('frame-015.gif'), pygame.image.load('frame-016.gif'), pygame.image.load('frame-017.gif'), pygame.image.load('frame-018.gif'), pygame.image.load('frame-019.gif'), pygame.image.load('frame-020.gif'), pygame.image.load('frame-021.gif'), pygame.image.load('frame-022.gif'), pygame.image.load('frame-023.gif'), pygame.image.load('frame-024.gif'), pygame.image.load('frame-025.gif'), pygame.image.load('frame-026.gif'), pygame.image.load('frame-027.gif'), pygame.image.load('frame-028.gif'), pygame.image.load('frame-029.gif'), pygame.image.load('frame-030.gif'), pygame.image.load('frame-031.gif'), pygame.image.load('frame-032.gif'), pygame.image.load('frame-033.gif'), pygame.image.load('frame-034.gif'), pygame.image.load('frame-035.gif'), pygame.image.load('frame-036.gif'), pygame.image.load('frame-037.gif'), pygame.image.load('frame-038.gif'), pygame.image.load('frame-039.gif'), pygame.image.load('frame-040.gif'), pygame.image.load('frame-041.gif'), pygame.image.load('frame-042.gif'), pygame.image.load('frame-043.gif'), pygame.image.load('frame-044.gif'), pygame.image.load('frame-045.gif'), pygame.image.load('frame-046.gif'), pygame.image.load('frame-047.gif'), pygame.image.load('frame-048.gif'), pygame.image.load('frame-049.gif')]
 
 
@@ -254,7 +253,14 @@ class heart_life(Scenario):
         super().__init__( x, y, width, height,'heart.png',[4,4,-8,-10] )
         #hitbox do coracao
         
-#desenho do coracao
+#Verifica o estado dos personagens
+def estados_personagens():
+    if man.health>0 and len(goblins)>0:
+       return "vivo"
+    elif(man.health==0):
+        return "perdeu"
+    elif(len(goblins)==0):
+        return "ganhou"
     
         
 #função principal de desenho
@@ -266,7 +272,7 @@ def redrawGameWindow(countBg):
     text = font.render('Life: ' + str(man.health), 1, (100,255,100))#escreve um texto sobre a saude do homem
     win.blit(text, (350, 10))#atualiza o texto
 #se saude do homem maior que 0 e se a lista de goblins não está vazia
-    if man.health>0 and len(goblins)>0:
+    if estados_personagens()=="vivo":
         man.draw(win)#desenho na tela do homem
         #desenhos do goblin ,balas ,coração e caixa em cada grupo respectivo a essas classes
         for goblin in goblins:
@@ -280,7 +286,7 @@ def redrawGameWindow(countBg):
         for heart in hearts:
             heart.draw(win)
     #se saude do homem igual a 0
-    if man.health==0:
+    if estados_personagens()=="perdeu":
         font1 = pygame.font.SysFont('roboto', 50)
         text1 = font1.render('YOU DIE!!!', 1, (255,0,0))#texto voce morreu
         win.blit(text1, (winWidth/2 - (text1.get_width()/2),winHeight/2))#atualiza o texto
@@ -290,7 +296,7 @@ def redrawGameWindow(countBg):
         win.blit(text2, (winWidth/2 - (text2.get_width()/2),winHeight/2+50))#atuliza o texto
 
     #se a lista de goblins está vazia
-    if len(goblins)==0:
+    if  estados_personagens()=="ganhou":
         font1 = pygame.font.SysFont('roboto', 50)
         text1 = font1.render('YOU WIN!', 1, (0,255,0))#texto voce ganhou
         win.blit(text1, (winWidth/2 - (text1.get_width()/2),winHeight/2))#atualiza o texto
