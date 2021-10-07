@@ -23,8 +23,6 @@ win = pygame.display.set_mode((winWidth,winHeight))
 pygame.display.set_caption("Goblin Invasion")
 
 #Sprites do personagem principal
-walkRight = [pygame.image.load('R1.png'), pygame.image.load('R2.png'), pygame.image.load('R3.png'), pygame.image.load('R4.png'), pygame.image.load('R5.png'), pygame.image.load('R6.png'), pygame.image.load('R7.png'), pygame.image.load('R8.png'), pygame.image.load('R9.png')]
-walkLeft = [pygame.image.load('L1.png'), pygame.image.load('L2.png'), pygame.image.load('L3.png'), pygame.image.load('L4.png'), pygame.image.load('L5.png'), pygame.image.load('L6.png'), pygame.image.load('L7.png'), pygame.image.load('L8.png'), pygame.image.load('L9.png')]
 bgs = [pygame.image.load('frame-001.gif'), pygame.image.load('frame-002.gif'), pygame.image.load('frame-003.gif'), pygame.image.load('frame-004.gif'), pygame.image.load('frame-005.gif'), pygame.image.load('frame-006.gif'), pygame.image.load('frame-007.gif'), pygame.image.load('frame-008.gif'), pygame.image.load('frame-009.gif'), pygame.image.load('frame-010.gif'), pygame.image.load('frame-011.gif'), pygame.image.load('frame-012.gif'), pygame.image.load('frame-013.gif'), pygame.image.load('frame-014.gif'), pygame.image.load('frame-015.gif'), pygame.image.load('frame-016.gif'), pygame.image.load('frame-017.gif'), pygame.image.load('frame-018.gif'), pygame.image.load('frame-019.gif'), pygame.image.load('frame-020.gif'), pygame.image.load('frame-021.gif'), pygame.image.load('frame-022.gif'), pygame.image.load('frame-023.gif'), pygame.image.load('frame-024.gif'), pygame.image.load('frame-025.gif'), pygame.image.load('frame-026.gif'), pygame.image.load('frame-027.gif'), pygame.image.load('frame-028.gif'), pygame.image.load('frame-029.gif'), pygame.image.load('frame-030.gif'), pygame.image.load('frame-031.gif'), pygame.image.load('frame-032.gif'), pygame.image.load('frame-033.gif'), pygame.image.load('frame-034.gif'), pygame.image.load('frame-035.gif'), pygame.image.load('frame-036.gif'), pygame.image.load('frame-037.gif'), pygame.image.load('frame-038.gif'), pygame.image.load('frame-039.gif'), pygame.image.load('frame-040.gif'), pygame.image.load('frame-041.gif'), pygame.image.load('frame-042.gif'), pygame.image.load('frame-043.gif'), pygame.image.load('frame-044.gif'), pygame.image.load('frame-045.gif'), pygame.image.load('frame-046.gif'), pygame.image.load('frame-047.gif'), pygame.image.load('frame-048.gif'), pygame.image.load('frame-049.gif')]
 
 
@@ -39,23 +37,41 @@ hitSound = pygame.mixer.Sound('hit.mp3')
 music = pygame.mixer.music.load('musicafundo.mp3')
 pygame.mixer.music.play(-1)
 
-#Definido classe do jogador
-class player(object):
-    def __init__(self,x,y,width,height):  #Construtor da classe e parâmetros iniciais 
+#definindo personagem(jogador e inimigo)
+class character(object):
+    def __init__(self,x,y,width,height,vel,walkCount,health):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        self.vel = 2.5                    #Velocidade do jogador
+        self.vel = vel 
+        self.walkCount=walkCount
+        self.health=health
+
+
+#Definido classe do jogador
+class player(character):
+    walkRight=[]
+    for i in range(1,10):
+        string='R'+str(i)+'.png'
+        walkRight.append(pygame.image.load(string))
+    #imagens do inimigo caminhado para a esquerda
+    walkLeft=[]
+    for i in range(1,10):
+        string='L'+str(i)+'.png'
+        walkLeft.append(pygame.image.load(string))
+   
+    def __init__(self,x,y,width,height):  #Construtor da classe e parâmetros iniciais 
+        super().__init__(x,y,width,height,2.5,0,10)
+                          
         self.velJump = 0                  #Velocidade do pulo
         self.isJump = False               #"Estado de pulo"
         self.left = False                 #"Estado de personagem encarando a esquerda"
         self.right = True                 #"Estado de personagem encarando a direita"
         self.standing = True              #Permanecer
-        self.walkCount = 0                #Contador de passos
         self.gravity = 1.5                #Gravidade
         self.velJump=0                    #Velocidade do pulo
-        self.health=10                    #vida do personagem
+        #vida do personagem
         self.countHit=0                   #Contador de hit
         self.countRecover=0               #Contador de recuperação
         self.imunityTime=0                #Tempo de imunidade
@@ -65,7 +81,6 @@ class player(object):
     def draw(self, win):
         
         #Se toma dano, printa na tela '-1hp' em posição definida, decrementa contador de hit
-        
         if self.countHit>0:
             font1 = pygame.font.SysFont('roboto', 50)
             text = font1.render('-1 hp', 1, (175,0,0))
@@ -73,7 +88,6 @@ class player(object):
             self.countHit-=1
         
         #Se colide com o coração, printa na tela '+1hp' em posição definida, decrementa contador de recuperação
-        
         if self.countRecover>0:
             font1 = pygame.font.SysFont('roboto', 50)
             text = font1.render('+1 hp', 1, (0,175,0))
@@ -93,16 +107,16 @@ class player(object):
         
         if not(self.standing):
             if self.left:
-                win.blit(walkLeft[self.walkCount//6], (self.x,self.y))
+                win.blit(player.walkLeft[self.walkCount//6], (self.x,self.y))
                 self.walkCount += 1
             elif self.right:
-                win.blit(walkRight[self.walkCount//6], (self.x,self.y))
+                win.blit(player.walkRight[self.walkCount//6], (self.x,self.y))
                 self.walkCount +=1
         else:
             if self.right:
-                win.blit(walkRight[0], (self.x, self.y))
+                win.blit(player.walkRight[0], (self.x, self.y))
             else:
-                win.blit(walkLeft[0], (self.x, self.y))
+                win.blit(player.walkLeft[0], (self.x, self.y))
 
         #Desenha a barra de vida vermelha e uma verde por cima, reduzindo a verde de acordo com a saúde
         pygame.draw.rect(win, (255,0,0), (self.hitbox[0]-10, self.hitbox[1] - 20, 50, 10))
@@ -141,23 +155,25 @@ class projectile(object):
         pygame.draw.circle(win, self.color2, (self.x,self.y), self.radius,1) #desenho do círculo externo
 
 #classe do inimigo
-class enemy(object):
-    #caminha para direita(imagens)
-    walkRight = [pygame.image.load('R1E.png'), pygame.image.load('R2E.png'), pygame.image.load('R3E.png'), pygame.image.load('R4E.png'), pygame.image.load('R5E.png'), pygame.image.load('R6E.png'), pygame.image.load('R7E.png'), pygame.image.load('R8E.png'), pygame.image.load('R9E.png'), pygame.image.load('R10E.png'), pygame.image.load('R11E.png')]
-    #caminha para a esquerda(imagens)
-    walkLeft = [pygame.image.load('L1E.png'), pygame.image.load('L2E.png'), pygame.image.load('L3E.png'), pygame.image.load('L4E.png'), pygame.image.load('L5E.png'), pygame.image.load('L6E.png'), pygame.image.load('L7E.png'), pygame.image.load('L8E.png'), pygame.image.load('L9E.png'), pygame.image.load('L10E.png'), pygame.image.load('L11E.png')]
+class enemy(character):
+    #imagens do inimigo caminhando para a direita
+    walkRight=[]
+    for i in range(1,12):
+        string='R'+str(i)+'E.png'
+        walkRight.append(pygame.image.load(string))
+    #imagens do inimigo caminhado para a esquerda
+    walkLeft=[]
+    for i in range(1,12):
+        string='L'+str(i)+'E.png'
+        walkLeft.append(pygame.image.load(string))
+   
 
     def __init__(self, x, y, width, height, end): #Construtor da classe e parâmetros iniciais 
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+        super().__init__(x,y,width,height,random.randint(-150,150)/100, random.randint(1,66),10)
         self.end = end#ate onde o inimigo pode caminhar
         self.path = [self.x, self.end]#lista com a posicao em inicial e a posicao final, que o inimigo pode ir 
-        self.walkCount = random.randint(1,66)#contador de passos aleatório
-        self.vel = random.randint(-150,150)/100#velocidade aleátoria do inimigo
         self.hitbox = (self.x + 17, self.y + 2, 31, 57)#hitbox (eixo x,eixoy,largura ,altura)
-        self.health = 10#vida do inimigo
+       #vida do inimigo
         self.bullets=[]#balas
 #cria a função de desenho do inimigo
     def draw(self,win):
@@ -167,14 +183,12 @@ class enemy(object):
         if self.walkCount==48:
             self.shoot()#atira 
 #velocidade do inimigo maior que 0
+        win.blit(self.walkLeft[self.walkCount //6], (self.x, self.y))
         if self.vel > 0:
             win.blit(self.walkRight[self.walkCount //6], (self.x, self.y))#atualiza posicao do inimigo para direita
             self.walkCount += 1#incremento no contador de passo
-        else:
-            win.blit(self.walkLeft[self.walkCount //6], (self.x, self.y))#atualiza posicao do inimigo para esquerda
-            self.walkCount += 1#incremento no contador de passos
         
-         #Desenha a barra de vida vermelha e uma verde por cima, reduzindo a verde de acordo com a saúde
+        #Desenha a barra de vida vermelha e uma verde por cima, reduzindo a verde de acordo com a saúde
         pygame.draw.rect(win, (255,0,0), (self.hitbox[0], self.hitbox[1] - 20, 50, 10))
         pygame.draw.rect(win, (0,128,0), (self.hitbox[0], self.hitbox[1] - 20, 50 - (5 * (10 - self.health)), 10))
 
@@ -186,11 +200,11 @@ class enemy(object):
  #função para o  inimigo atirar   
     def shoot(self):
         bulletSound.play()#som do tiro
+        facing=1#face virada para a direita
         if self.vel < 0:#se velocidade menor que 0
             facing = -1 #face virada para a esquerda 
-        else:
-            facing = 1#face virada para a direita
-#adicao de balas na lista bullets colocando a posicao do projetil e as cores
+       
+        #adicao de balas na lista bullets colocando a posicao do projetil e as cores
         self.bullets.append(projectile(round(self.x + self.width //2), round(self.y + self.height//2), 6, (255,0,0),(0,0,0), facing))
         
 #inimigo se movimentando        
@@ -211,40 +225,45 @@ class enemy(object):
     def hit(self):
         if self.health > 0:
             self.health -= 1#perde 1 de vida
-            
-#classe dos obstaculos
-class obstacle(object):
-    def __init__(self, x, y, width, height):#Construtor da classe e parâmetros iniciais
+
+#classe que junta os obstaculos(obstacles) aos coracoes(heart_life)
+class Scenario(object):
+    def __init__(self, x, y, width, height,image,lista):#Construtor da classe e parâmetros iniciais
         self.x = x
         self.y = y
         self.width = width
-        self.height = height
-        self.listObstacle = [pygame.image.load('caixa.png')]#imagem da caixa
-        self.hitbox = [self.x, self.y, self.width, self.height]#hitbox da caixa
-#cria a função de desenho dos obstaculos (caixas)
-        
+        self.height = height    
+        self.listImage=[pygame.image.load(image)]
+        self.hitbox = [self.x+lista[0], self.y+lista[1], self.width+lista[2], self.height+lista[3]]
+
     def draw(self,win):
-        image = pygame.transform.scale(self.listObstacle[0].convert_alpha(),(self.width,self.height))#transformação de escala da imagem
+        image = pygame.transform.scale(self.listImage[0].convert_alpha(),(self.width,self.height))#transformação de escala da imagem
         win.blit(image,(self.x,self.y))#atualiza
-        #pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+#classe dos obstaculos
+class obstacle(Scenario):
+    def __init__(self, x, y, width, height):#Construtor da classe e parâmetros iniciais
+        super().__init__( x, y, width, height,'caixa.png',[0,0,0,0])
+       
+    
+    
         
 #classe das vidas ganhar ao passar pelo coração
-class heart_life(object):
+class heart_life(Scenario):
     def __init__(self, x, y, width, height):##Construtor da classe e parâmetros iniciais
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.listHearts = [pygame.image.load('heart.png')]#imagem coracao
-        self.hitbox = [self.x+4, self.y+4, self.width-8, self.height-10]#hitbox do coracao
+        super().__init__( x, y, width, height,'heart.png',[4,4,-8,-10] )
+        #hitbox do coracao
         
-#desenho do coracao
-    def draw(self,win):
-        image = pygame.transform.scale(self.listHearts[0].convert_alpha(),(self.width,self.height))#transformação de escala
-        win.blit(image,(self.x,self.y))#atualiza
-        #pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+#Verifica o estado dos personagens
+def estados_personagens():
+    if man.health>0 and len(goblins)>0:
+       return "vivo"
+    elif(man.health==0):
+        return "perdeu"
+    elif(len(goblins)==0):
+        return "ganhou"
+    
         
-#função de principal de desenho
+#função principal de desenho
 def redrawGameWindow(countBg):
     if countBg[0] > 146: #se o contador de background maior que 146
         countBg[0]=0 #reseta o contador de background
@@ -253,7 +272,7 @@ def redrawGameWindow(countBg):
     text = font.render('Life: ' + str(man.health), 1, (100,255,100))#escreve um texto sobre a saude do homem
     win.blit(text, (350, 10))#atualiza o texto
 #se saude do homem maior que 0 e se a lista de goblins não está vazia
-    if man.health>0 and len(goblins)>0:
+    if estados_personagens()=="vivo":
         man.draw(win)#desenho na tela do homem
         #desenhos do goblin ,balas ,coração e caixa em cada grupo respectivo a essas classes
         for goblin in goblins:
@@ -267,7 +286,7 @@ def redrawGameWindow(countBg):
         for heart in hearts:
             heart.draw(win)
     #se saude do homem igual a 0
-    if man.health==0:
+    if estados_personagens()=="perdeu":
         font1 = pygame.font.SysFont('roboto', 50)
         text1 = font1.render('YOU DIE!!!', 1, (255,0,0))#texto voce morreu
         win.blit(text1, (winWidth/2 - (text1.get_width()/2),winHeight/2))#atualiza o texto
@@ -277,7 +296,7 @@ def redrawGameWindow(countBg):
         win.blit(text2, (winWidth/2 - (text2.get_width()/2),winHeight/2+50))#atuliza o texto
 
     #se a lista de goblins está vazia
-    if len(goblins)==0:
+    if  estados_personagens()=="ganhou":
         font1 = pygame.font.SysFont('roboto', 50)
         text1 = font1.render('YOU WIN!', 1, (0,255,0))#texto voce ganhou
         win.blit(text1, (winWidth/2 - (text1.get_width()/2),winHeight/2))#atualiza o texto
@@ -287,7 +306,6 @@ def redrawGameWindow(countBg):
         win.blit(text2, (winWidth/2 - (text2.get_width()/2),winHeight/2+50))#atualiza o texto
     countBg[0]+=1 #incrementa o contador de background
 
-        
 #atualiza o jogo        
     pygame.display.update()
 #verifica a condicao de colisao do homem e a caixa
@@ -300,10 +318,10 @@ def verificar(caixa,x,y):
 # funca de atirar
 def shoot(char,bullets):
     bulletSound.play()#som do tiro
+    facing=1
     if char.left:#atirar para esquerda
         facing = -1#face voltada para a esquerda
-    else:
-        facing = 1#face voltada para a direita
+    
    #quantidade de balas     
     if len(bullets) < 20:
         #adicao de balas na lista bullets colocando a posicao do projetil e as cores
@@ -314,7 +332,7 @@ def start():
     font = pygame.font.SysFont('comicsans', 30, True)#texto
     man = player(100, 500, 64,64)#posicao inicial do jogador
     goblins = [enemy(200, 500, 64, 64, 265),enemy(330, 500, 64, 64, 400),enemy(900, 500, 64, 64, 1000)]#posicao inicial dos 3 inimigos
-#poscicao da caixa (a cada 100 pixels no eixo x  ,no eixo y a posicao fica aleatória)
+#posicao da caixa (a cada 100 pixels no eixo x  ,no eixo y a posicao fica aleatória)
     caixas = [obstacle(500,random.randint(100,500),64,64),obstacle(600,random.randint(100,500),64,64),obstacle(700,random.randint(100,500),64,64),obstacle(800,random.randint(100,500),64,64)]
 #posicao dos coracoes (nem todas as caixas possuem coração)   
     hearts = [heart_life(caixas[0].x+16,caixas[0].y-30,32,32),heart_life(caixas[1].x+16,caixas[1].y-30,32,32),heart_life(caixas[3].x+16,caixas[3].y-30,32,32)]
